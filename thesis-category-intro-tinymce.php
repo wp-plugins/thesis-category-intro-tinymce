@@ -2,7 +2,7 @@
 /*
 Plugin Name: Thesis Archive Intro Visual Editor
 Plugin URI: http://andrewsfreeman.com/thesis-category-intro-plugin/
-Description: A brief description of the Plugin.
+Description: Adds the visual editor to Thesis' category archive intro field.
 Version: 1.0
 Author: Andrew Freeman
 Author URI: http://andrewsfreeman.com
@@ -26,36 +26,32 @@ License: GPL2
 */
 
 // Add shortcode support and remove HTML filtering.
-add_filter('thesis_archive_intro','do_shortcode',100);
-add_action('init', 'catde_init');
-function catde_init() {
-	if ( is_admin() || defined('DOING_AJAX') ) {
-		if ( current_user_can('manage_categories') )
-			remove_filter('pre_term_description', 'wp_filter_kses');
+add_filter( 'thesis_archive_intro', 'do_shortcode', 100 );
+add_action( 'init', 'asf_tai_init' );
+function asf_tai_init() {
+	if ( is_admin() || defined( 'DOING_AJAX' ) ) {
+		if ( current_user_can( 'manage_categories' ) )
+			remove_filter( 'pre_term_description', 'wp_filter_kses' );
 	}
 }
 
 // Ensure that we're on the category and tag pages, then setup everything we need
-add_action('load-categories.php', 'catde_admin_init');
-add_action('load-edit-tags.php', 'catde_admin_init');
-function catde_admin_init() {
+add_action( 'load-categories.php', 'asf_tai_admin_init' );
+add_action( 'load-edit-tags.php', 'asf_tai_admin_init' );
+function asf_tai_admin_init() {
 	if ( user_can_richedit() && isset( $_GET['action'] ) && 'edit' === $_GET['action'] 
 		&& ( !empty( $_GET['cat_ID'] ) || ( !empty( $_GET['taxonomy'] ) && !empty( $_GET['tag_ID'] ) ) ) ) {
-		add_action('admin_head', 'catde_head');
-		add_action('admin_footer', 'wp_tiny_mce');
-		add_action('admin_print_footer_scripts','my_admin_print_footer_scripts',99);
+		add_action( 'admin_head', 'asf_tai_head' );
+		add_action( 'admin_footer', 'wp_tiny_mce' );
+		add_action( 'admin_print_footer_scripts', 'asf_tai_print_footer_scripts', 99 );
 	}
 }
 
 // Add the styles for editor buttons and setup thickbox for tinymce plugins
-function catde_head() { 
-	wp_enqueue_style('editor-buttons');
+function asf_tai_head() { 
+	wp_enqueue_style( 'editor-buttons' );
+	wp_enqueue_script( 'editor' );
 	add_thickbox();
-}
-
-// Enqueue the editor
-function add_tinymce_cat() {
-	wp_enqueue_script('editor');
 }
 
 /**
@@ -65,7 +61,7 @@ function add_tinymce_cat() {
  * (e.g., Special Text Boxes).
  * @todo  move into its own file?
  */
-function my_admin_print_footer_scripts() {
+function asf_tai_print_footer_scripts() {
 	?>
 	<script type="text/javascript">
 		/* <![CDATA[ */
